@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="injurystyles.css">
+  <title>Injury page</title>
+  <style>
+      *{
+          box-sizing: border-box;
+          outline: none;
+          list-style: none;
+          font-family: 'Raleway', sans-serif;
+      }
+      body {
+          background: #e4eefa;
+      }
+      * {
+          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif
+      }
+      ul {
+          list-style-type: none;
+          margin: 0;
+          padding: 0;
+          overflow: hidden;
+          background-color: #333;
+      }
+      .nav-bar-wrapper-inj > li {
+          float: right;
+      }
+      .nav-bar-wrapper-inj > li a {
+          display: block;
+          color: white;
+          text-align: center;
+          padding: 14px 16px;
+          text-decoration: none;
+      }
+      .nav-bar-wrapper-inj > li a:hover, .dropdown:hover .drpobtn {
+          background-color: #111;
+      }
+      th {
+          text-align: left;
+      }
+      th,td {
+          padding: 0 15px;
+      }
+  </style>
+  <!--<link rel="stylesheet" href="injurystyles.css">-->
+  <!--<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">-->
+</head>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+    // empties injury table (HTML) in order to show new query
+    function clearTable() {
+        var injury_table = document.getElementById("injury-table");
+        while (injury_table.rows.length > 1) {
+            injury_table.deleteRow(1);
+        }
+    }
+    $(document).ready(function(){
+        var $form = $('button');
+        $("#select-submit").click(function(){
+            let selected_date = $("#date-select").val();
+            $.ajax({
+                type: "POST",
+                url: "/return_injury",
+                contentType: "application/json",
+                data: JSON.stringify( {dateJSON: selected_date} ),
+                success:(data)=>{
+                    updateInjuries(JSON.parse(data));
+                }
+            });
+        });
+    });
+    function updateInjuries(data) {
+        let inj_playerName = data[0].firstName + " " + data[0].lastName;
+        for (i = 0; i < data.length; i++) {
+            var inj_table = document.getElementById("injury-table");
+            var row = inj_table.insertRow(-1);
+            var cell0 = row.insertCell(0);
+            var cell1 = row.insertCell(1);
+            var cell2 = row.insertCell(2);
+            cell0.innerHTML = data[i].firstName + " " + data[i].lastName;
+            cell1.innerHTML = data[i].Injury;
+            cell2.innerHTML = data[i].Returns;
+        }
+    }
+</script>
+<body>
+    <div class="nav-wrapper-inj">
+        <ul class="nav-bar-wrapper-inj">
+            <li style="float:left"><a href="http://localhost:3000/">Fantasy Basketball Buddy</a></li>
+            <li><a href="#about">About</a></li>
+            <li><a href="#contact">Contact</a></li>
+            <li><a href="http://localhost:3000/injuries">Injury Report</a></li>
+        </ul>
+    </div>
+    <div class="date-selector">
+        <h5>Select a return date:</h5>
+        <input type="text" id="date-select" placeholder="yyyy-mm-dd" size=10>
+        <input id="select-submit" type="submit" onclick="return clearTable();"/>
+    </div>
+    <div class="table-data">
+        <h2>Injured Players</h2>
+        <table id = "injury-table">
+            <tr>
+                <th>Player</th>
+                <th>Injury</th>
+                <th>Estimated Return</th>
+            </tr>
+            <%
+            if(injuryData.length!=0){
+            var i=1;
+            injuryData.forEach(function(data){
+            %>
+            <tr>
+                <td><%=data.firstName %> <%=data.lastName %></td>
+                <td><%=data.Injury %></td>
+                <td><%=data.Returns %></td>
+            </tr>
+            <%  i++; }) %>
+            <% } else{ %>
+                <tr>
+                    <td colspan="7">No Data Found</td>
+                </tr>
+            <% } %>
+        </table>
+    </div>
+</body>
+</html>

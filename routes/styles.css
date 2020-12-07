@@ -1,0 +1,95 @@
+@import url('https://fonts.googleapis.com/css2?family=Raleway:wght@300;400&display=swap');
+/* CSS Document */
+
+.center {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 50%;
+}
+
+*{
+    box-sizing: border-box;
+    outline: none;
+    list-style: none;
+    font-family: 'Raleway', sans-serif;
+}
+
+body{
+    background: #e4eefa;
+}
+
+td,th {
+    padding:0 15px;
+}
+* {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif
+}
+
+ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: #333;
+}
+
+/* navigation bar */
+.nav-bar-wrapper > li {
+    float: right;
+}
+
+.nav-bar-wrapper > li a {
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+}
+
+.nav-bar-wrapper > li a:hover, .dropdown:hover .dropbtn {
+    background-color: #111;
+}
+
+/* League Settings */
+.league-input > .points-input {
+    display: inline;
+}
+
+#set-text {
+    color: maroon
+}
+
+/* Add players to team */
+.dropdown_content{
+    /*
+    top: 50%;
+    left: 50%;
+    transform: translate(50%,100%);
+    */
+    
+    width: 150px;
+    /*border-right: 2px solid #dde2f1;*/
+    color: #9fa3b1;
+    position: relative;
+    cursor: pointer;
+}
+
+.delete_button {
+    color: teal;
+    padding: 2px 8px;
+}
+  
+/*
+.dropdown_content ul{
+    position: absolute;
+    top: 70px;
+    left: -10px;
+    background: #fff;
+    width: 150px;
+    border-radius: 5px;
+    padding: 20px;
+    display: none;
+    box-shadow: 8px 8px 6px -10px #b3c6ff;
+  }
+  */

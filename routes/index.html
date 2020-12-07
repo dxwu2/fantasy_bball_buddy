@@ -1,0 +1,234 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <!-- import bootstrap CSS -->
+  <!--
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+  -->
+  <!-- import jquery -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script>
+    $(document).ready(function(){
+      var $form = $('button');
+      $("#add_players").click(function(){
+        
+        // store user input in variable
+        let pnameText = $('#player_name').val();
+        // adds HTML element to render added player
+        $(".myTeam").append("<tr></tr>");
+
+        
+        $.ajax({
+          type: "POST",
+          url: "/",
+          contentType: "application/json",
+          data: JSON.stringify( {playerNameJSON: pnameText} ),
+        });
+        
+      });
+    });
+
+    $(document).ready(function(){
+      $(document).on("click", '.team-table td',function() {
+        let playerToRemove = this.parentNode.cells[0].innerHTML;
+        //console.log('player to be removed: ' + playerToRemove);
+
+        $.ajax({
+          type: "POST",
+          url: "/remove_player",
+          contentType: "application/json",
+          data: JSON.stringify( {playerNameJSON: playerToRemove} ),
+        });
+      });
+    });
+  </script>
+
+  <script>
+    $(document).ready(function(){
+      var $form = $('button');
+      $("#set-mults").click(function(){
+        // store user input in variable
+        let pts_multiplier = $('#pts_mult').val();
+        let reb_multiplier = $('#reb_mult').val();
+        let assist_multiplier = $('#assist_mult').val();
+        let blk_multiplier = $('#blk_mult').val();
+        let stl_multiplier = $('#stl_mult').val();
+        console.log("vals: " + pts_multiplier + ", " + reb_multiplier + ", " + assist_multiplier + ", " + blk_multiplier + ", " + stl_multiplier);
+
+        $("#set-text").append("<b>Values set!</b>");
+        
+        $.ajax({
+          type: "POST",
+          url: "/pts_mult",
+          contentType: "application/json",
+          data: JSON.stringify( {ptsJSON: pts_multiplier, rebJSON: reb_multiplier, assistJSON: assist_multiplier, blkJSON: blk_multiplier, stlJSON: stl_multiplier} ),
+        });
+      });
+    });
+  </script>
+
+  <script type="text/javascript">
+    function getPlayers(value) {
+      $.ajax({
+        type: "POST",
+        url: "/search",
+        contentType: "application/json",
+        data: JSON.stringify( {partialName: value} ),
+        success:(data)=>{
+          updateResults(JSON.parse(data));
+        }
+      });
+    }
+
+    function updateResults(data) {
+      clearResults();
+      // console.log('data: ' + data)
+      // console.log('parsed data: ' + data.playerName);
+      // console.log('data attr: ' + JSON.parse(data).team)
+      let testing2 = data
+
+      const dropdown_menu = document.getElementById("searched_players");
+      for (i = 0; i < Math.min(data.length, 5); i++) {
+        //console.log(data[i].playerName)
+        //dropdown_menu.append(data[i].playerName)
+        var ul = document.getElementById("searched_players");
+        var li = document.createElement("li");
+        li.appendChild(document.createTextNode(data[i].playerName));
+        ul.appendChild(li);
+      }
+    }
+
+    function clearResults() {
+      //$("li").empty();
+      $("#searched_players > li").empty();
+    }
+
+    function showDropdown() {
+      // console.log('clicked')
+      document.getElementById("myDropdown").classList.toggle("show");
+    }
+  </script>
+  
+  <body>
+    <div class="nav-wrapper">
+      <ul class="nav-bar-wrapper">
+        <li style="float:left"><a href="http://localhost:3000/">Fantasy Basketball Buddy</a></li>
+        <li><a href="#about">About</a></li>
+        <li><a href="#contact">Contact</a></li>
+        <li><a href="http://localhost:3000/injuries">Injury Report</a></li>
+      </ul>
+    </div>
+
+    <div>
+      <br>
+      <h4>Enter Fantasy League Settings</h4>
+      <div class="league-input">
+        <div class="points-input">
+          <h6>Enter points value:</h6>
+          <input type="text" id="pts_mult" size=2>
+        </div>
+        <div class="reb-input">
+          <h6>Enter rebounds value:</h6>
+          <input type="text" id="reb_mult" size=2>
+        </div>
+        <div class="assist-input">
+          <h6>Enter assists value:</h6>
+          <input type="text" id="assist_mult" size=2>
+        </div>
+        <div class="blk-input">
+          <h6>Enter blocks value:</h6>
+          <input type="text" id="blk_mult" size=2>
+        </div>
+        <div class="steal-input">
+          <h6>Enter steals value:</h6>
+          <input type="text" id="stl_mult" size=2>
+        </div>
+        <br>
+        <div class="setval-button">
+          <button id="set-mults">Set values</button>
+          <h6 id="set-text"></h6>
+        </div>
+      </div>
+
+      <h4>Add players to your team</h4>
+
+      <form action="/user_create" method="POST">
+        <!--<input type="text" id="player_name" placeholder="Search player..." name="create_player_name"/>-->
+        <!--<input class="typeahead tt-query" spellcheck="false" autocomplete="off" placeholder="testing..." name="typeahead" type="text" />-->
+        <div id="myDropdown" class="dropdown_content">
+          <input type="text" id="player_name" placeholder="Search players..." onclick="showDropdown()"  onkeyup="getPlayers(this.value)"/>
+          <ul id="searched_players">
+          </ul>
+        </div>
+        
+        <br>
+        <div id="results"></div>
+        <input id="add_players" type="submit" onclick="return addPlayerToTeam($('#player_name').val());"/>
+        <button id="show_players">Show me players</button>
+      </form>
+      
+    </div>
+    <h4>Your Fantasy Team:</h4>
+    <div class="team-table">
+      <table id="myTeam">
+          <th align="left">Player</th>
+          <th align="left">Position</th>
+          <th align="left">Team</th>
+          <!--
+          <tr>
+            <td>Giannis Antetokounmpo</td>
+            <td>PF</td>
+            <td>Milwaukee Bucks</td>
+            <td><input type="button" class="button" value="Delete player" onclick="deletePlayerFromTeam();"></td>
+          </tr>
+          -->
+    </table>
+    <p id="demo"></p>
+  </div>
+  <script>
+      // global variable for row id
+      //let i = 0;
+
+      var player_array = [];  // needs to be an array of singular arrays (makes it easier to insert into mysql database)
+      function addPlayerToTeam(player_name) {
+        // get position and team from database
+        let playerPos = "";
+        let playerTeam = "";
+        var def = $.ajax({
+          type: "POST",
+          url: "/otherinfo",
+          contentType: "application/json",
+          data: JSON.stringify({ playerNameJSON: player_name} ),
+          success:(data)=>{
+            let parsed_data = JSON.parse(data);
+            playerPos = parsed_data[0].position;
+            playerTeam = parsed_data[0].team;
+          }
+        });
+
+        $.when(def).then(function(data) {
+          console.log('huh: ' + data)
+          var table = document.getElementById("myTeam");
+          var row = table.insertRow(-1);
+          var cell0 = row.insertCell(0);
+          var cell1 = row.insertCell(1);
+          var cell2 = row.insertCell(2); 
+          var cell3 = row.insertCell(3);
+
+          cell0.innerHTML = document.getElementById("player_name").value;
+          cell1.innerHTML = playerPos;
+          cell2.innerHTML = playerTeam;
+          cell3.innerHTML = '<button class="delete_button" onclick="deletePlayerFromTeam(this)">remove</button>';
+          //cell3.id = 'delete_' + (document.getElementById("player_name").value).split(" ").join("");
+        })
+        // return false to stay on page
+        return false;
+      }
+      function deletePlayerFromTeam(r) {
+        var row_index = r.parentNode.parentNode.rowIndex;
+        document.getElementById("myTeam").deleteRow(row_index);
+      }
+  </script>
+  </body>
+</html>
