@@ -10,7 +10,7 @@ var injuryRoute = require('./routes/injuries')
 //var userRoute = require('./routes/users')
 const port = 3000
 const connectionString = "mongodb+srv://admin:adminpassword@nba-fantasy-helper.q6k0q.mongodb.net/injuries?retryWrites=true&w=majority";
-var sqldb = require('./mysqldb.js')
+//var sqldb = require('./mysqldb.js')
 const morgan = require('morgan')
 var Schema = mongoose.Schema;
 
